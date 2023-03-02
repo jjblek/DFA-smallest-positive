@@ -25,23 +25,37 @@
 #include <vector>
 #include <queue>
 #include <algorithm>
-//test
-std::string findString(int k, const std::vector<int>& S);
+
+//
 int delta(int, int, int);
+std::string findString(int, const std::vector<int>&);
+bool isValidSet(const std::vector<int>&);
 
 /** ***************************************************************************
- *
+ * delta function δ(j, a) = (10 ∗ j + a) % k
  * @param   q state of DFA M
  * @param   r digit of subset S
  * @param   k integer to divide
- * @pre     q >= 0
- *          r ∈ S
- *          k > 0
- * @post
+ * @pre     q >= 0,
+ *          r ∈ S,
+ *          k > 0,
+ * @post    int >= 0
  *
  *****************************************************************************/
 int delta(int q, int r, int k) {
-    return (10 * q + r) % k;
+    if (r == 0 && (q == 0 || q == k)) return k;
+    else return (10 * q + r) % k;
+}
+
+/** ***************************************************************************
+ * check if vector is a valid set, valid digits = {0, 1, 2,..., 9}
+ * @param   v vector to check
+ * @pre
+ * @post
+ *
+ *****************************************************************************/
+bool isValidSet(const std::vector<int>& v) {
+    return std::all_of(v.cbegin(),v.cend(),[](int i){return i >= 0 && i < 10;});
 }
 
 
@@ -50,13 +64,17 @@ int delta(int q, int r, int k) {
  * a subset S of {0, 1, 2, · · · , 9} and outputs
  * the smallest positive integer y > 0 that is an integer multiple of k,
  * and has only the digits (in decimal) from the set S.
- * @param   k positive integer k > 0
+ * @param   k positive integer
  * @param   D alphabet
- * @pre
+ * @pre     k > 0,
  * @post
  *
  *****************************************************************************/
 std::string findString(int k, const std::vector<int>& S) {
+
+    if (!isValidSet(S)) return "no solution";
+
+
 
     std::queue<int> Q;
     std::vector<bool> visited(k, false);
@@ -100,21 +118,34 @@ std::string findString(int k, const std::vector<int>& S) {
 
     if (next != 0) return "no solution"; // output no solution
     else {
-        std::string s;
+
+
+
+        std::string N;
+        // trace the string using parent pointers and
+        // concatenate the corresponding labels and
         while (curr != 0) {
-            s += label[curr];
+            N += char(label[curr]);
             curr = parent[curr];
         }
-        std::reverse(s.begin(), s.end());
-        s+=tail;
-        return s;
+        // output the reverse of the string.
+        std::reverse(N.begin(), N.end());
+        N+=char(tail);
+        return N;
     }
 }
 
 int main() {
-    std::vector<int> S = {1, 3};
-    // N = 1113313113
-    for (auto &c: findString(26147, S))
-        std::cout << int(c);
+    int k = 92917;
+    std::vector<int> S = {0, 1};
+
+    std::string result = findString(k, S);
+
+    if (result == "no solution") std::cout << "no solution";
+    else {
+        for (auto &c: result)
+            std::cout << int(c);
+    }
+
     return 0;
 }
