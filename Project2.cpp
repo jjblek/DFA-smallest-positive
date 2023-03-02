@@ -29,7 +29,7 @@
 //
 int delta(int, int, int);
 std::string findString(int, const std::vector<int>&);
-bool isValidSet(const std::vector<int>&);
+bool valid(int k, const std::vector<int>&);
 
 /** ***************************************************************************
  * delta function δ(j, a) = (10 ∗ j + a) % k
@@ -48,16 +48,27 @@ int delta(int q, int r, int k) {
 }
 
 /** ***************************************************************************
- * check if vector is a valid set, valid digits = {0, 1, 2,..., 9}
+ * check if vector is a valid set, valid digits S = {0, 1, 2,..., 9}
  * @param   v vector to check
- * @pre
- * @post
+ * @pre     vector
+ * @post    true if vector contains only digits 1-9, else false
  *
  *****************************************************************************/
-bool isValidSet(const std::vector<int>& v) {
-    return std::all_of(v.cbegin(),v.cend(),[](int i){return i >= 0 && i < 10;});
+bool valid(int k, const std::vector<int>& v) {
+    if (k <= 0) {
+        std::cout << "\nError: k cannot be less than or equal to 0" << std::endl;
+        return false;
+    }
+    else if (v.empty()) {
+        std::cout << "\nError: set S is empty" << std::endl;
+        return false;
+    }
+    else if (std::all_of(v.cbegin(),v.cend(),[](int i){return i <= 0 || i >= 10;})) {
+        std::cout << "\nError: out of range digit/s in set S" << std::endl;
+        return false;
+    }
+    return true;
 }
-
 
 /** ***************************************************************************
  * The algorithm FindString takes as input a positive integer k, and
@@ -72,9 +83,7 @@ bool isValidSet(const std::vector<int>& v) {
  *****************************************************************************/
 std::string findString(int k, const std::vector<int>& S) {
 
-    if (!isValidSet(S)) return "no solution";
-
-
+    if (!valid(k, S)) return "";
 
     std::queue<int> Q;
     std::vector<bool> visited(k, false);
@@ -116,11 +125,11 @@ std::string findString(int k, const std::vector<int>& S) {
         if (flag) break;
     }
 
-    if (next != 0) return "no solution"; // output no solution
+    if (next != 0) { // output no solution
+        std::cout << "\nNo solution found" << std::endl;
+        return "";
+    }
     else {
-
-
-
         std::string N;
         // trace the string using parent pointers and
         // concatenate the corresponding labels and
@@ -130,22 +139,24 @@ std::string findString(int k, const std::vector<int>& S) {
         }
         // output the reverse of the string.
         std::reverse(N.begin(), N.end());
-        N+=char(tail);
+        N += char(tail);
         return N;
     }
 }
 
 int main() {
-    int k = 92917;
-    std::vector<int> S = {0, 1};
 
-    std::string result = findString(k, S);
+    int k = 0;                      // positive integer k > 0
 
-    if (result == "no solution") std::cout << "no solution";
-    else {
-        for (auto &c: result)
-            std::cout << int(c);
+    std::vector<int> S = {0, 10};        // subset S of {0, 1, 2, · · · , 9} of digits
+
+    std::string N = findString(k, S);   // positive integer N > 0 such that N % k = 0
+
+    if (!N.empty()) {                   // if k has solution N (N is not empty)
+        for (auto &c: N)
+            std::cout << int(c);        // print the solution
     }
+
 
     return 0;
 }
