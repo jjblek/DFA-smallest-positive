@@ -36,5 +36,5 @@ From above, standalone delta function δ(j, a) = (10 ∗ j + a) % k
 ```
 cd <working directory>
 make
-./Project2.x
+./Project2
 ```
